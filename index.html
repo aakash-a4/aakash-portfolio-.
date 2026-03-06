@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aakash Vallamkonda — Cloud Security Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0e;
+    --surface: #0d1a22;
+    --border: #1a3040;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --text: #e0eaf0;
+    --muted: #5a7a8a;
+    --green: #00ff9d;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(5,10,14,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 2; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(80px, 18vw, 240px);
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0,212,255,0.06);
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-content {
+    max-width: 900px;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(48px, 8vw, 100px);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+  }
+
+  h1 span {
+    display: block;
+    color: var(--accent);
+    -webkit-text-stroke: 0px;
+  }
+
+  .hero-desc {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 14px 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: none;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 14px 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: none;
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .hero-stats {
+    position: absolute;
+    right: 48px;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* SCANNING LINE */
+  .scan-line {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 3s ease-in-out infinite;
+  }
+
+  @keyframes scan {
+    0%, 100% { opacity: 0; transform: translateX(-100%); }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%); }
+  }
+
+  /* ABOUT */
+  #about {
+    padding: 120px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 80px;
+  }
+
+  h2 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+
+  .about-text {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .about-text strong { color: var(--text); font-weight: 500; }
+
+  .contact-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 40px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+
+  .contact-item:hover { border-color: var(--accent); }
+
+  .contact-icon {
+    font-size: 18px;
+    width: 36px;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  .contact-detail { font-size: 14px; color: var(--text); }
+  .contact-sub { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+
+  /* SKILLS */
+  #skills {
+    padding: 120px 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .skills-intro { max-width: 600px; margin-bottom: 60px; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+  }
+
+  .skill-card {
+    background: var(--surface);
+    padding: 28px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .skill-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .skill-card:hover::before { transform: scaleX(1); }
+
+  .skill-cat {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .skill-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 5px 10px;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.15);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+
+  .skill-card:hover .tag {
+    background: rgba(0,212,255,0.1);
+    color: var(--text);
+  }
+
+  /* EXPERIENCE */
+  #experience {
+    padding: 120px 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .exp-card {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 60px;
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .exp-card:first-of-type { padding-top: 0; }
+
+  .exp-meta { position: sticky; top: 120px; }
+
+  .exp-period {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  .exp-company {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .exp-location {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .exp-badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 6px 12px;
+    background: rgba(0,255,157,0.08);
+    border: 1px solid rgba(0,255,157,0.2);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .exp-role { font-size: 28px; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.02em; }
+
+  .exp-items { display: flex; flex-direction: column; gap: 16px; }
+
+  .exp-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 20px;
+    border-left: 2px solid var(--border);
+    transition: border-color 0.2s;
+  }
+
+  .exp-item:hover { border-left-color: var(--accent); }
+
+  .exp-item-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+
+  .exp-item-text { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+  /* PROJECTS */
+  #projects {
+    padding: 120px 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .project-card {
+    background: var(--surface);
+    padding: 36px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-6px);
+  }
+
+  .project-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 64px;
+    font-weight: 700;
+    color: rgba(0,212,255,0.04);
+    position: absolute;
+    top: 16px; right: 24px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .project-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .project-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .project-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .project-card:hover .project-arrow { opacity: 1; }
+
+  /* ACHIEVEMENTS */
+  #achievements {
+    padding: 120px 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .ach-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .ach-card {
+    padding: 40px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .ach-card:hover { border-color: var(--accent2); }
+
+  .ach-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .ach-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .ach-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .ach-highlight {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent2);
+    letter-spacing: -0.03em;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* EDUCATION */
+  #education {
+    padding: 120px 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .edu-card {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 60px;
+    padding: 48px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    max-width: 800px;
+  }
+
+  .edu-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  .edu-card h3 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .edu-card h4 { font-size: 14px; color: var(--muted); font-weight: 400; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+    position: relative;
+  }
+
+  footer .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  footer .copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .observe { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .observe.visible { opacity: 1; transform: translateY(0); }
+
+  /* TERMINAL BLINK */
+  .blink {
+    animation: blink 1s step-end infinite;
+    color: var(--accent);
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    #hero { padding: 0 24px; padding-top: 80px; }
+    .hero-stats { display: none; }
+    #about { grid-template-columns: 1fr; padding: 80px 24px; gap: 48px; }
+    #skills, #experience, #projects, #achievements, #education { padding: 80px 24px; }
+    .exp-card { grid-template-columns: 1fr; gap: 24px; }
+    .exp-meta { position: static; }
+    .edu-card { grid-template-columns: 1fr; gap: 24px; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="#hero" class="nav-logo">AV.DEV</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#achievements">Achievements</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">SECURE</div>
+  <div class="hero-content">
+    <div class="hero-tag">Cloud Security Engineer</div>
+    <h1>
+      Aakash<br>
+      <span>Vallamkonda</span>
+    </h1>
+    <p class="hero-desc">
+      Building secure, reliable cloud environments — 2+ years hardening AWS infrastructure, automating threat detection, and keeping systems resilient.
+    </p>
+    <div class="hero-ctas">
+      <a href="mailto:aakashvallamkonda@gmail.com" class="btn-primary">Get in Touch</a>
+      <a href="https://linkedin.com/in/aakash-vallamkonda" target="_blank" class="btn-outline">LinkedIn ↗</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">2+</div>
+      <div class="stat-label">Years Experience</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">30%</div>
+      <div class="stat-label">Manual Effort Reduced</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Major Projects</div>
+    </div>
+  </div>
+  <div class="scan-line"></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div>
+    <div class="section-label">About</div>
+    <h2>Cloud Security<br>& Observability</h2>
+    <p class="about-text">
+      I'm a Cloud Security and Cloud Operations Engineer based in <strong>Bengaluru, India</strong>, currently with <strong>Tech Mahindra</strong>. I specialize in securing AWS environments, building automation pipelines, and detecting threats before they become incidents.
+    </p>
+    <p class="about-text">
+      My background in Electronics Engineering combined with hands-on cloud security work gives me a unique perspective — I think in systems, trace signals through noise, and always ask "how could this fail?"
+    </p>
+    <p class="about-text">
+      I've been recognized with a <strong>Certificate of Excellence</strong> from Telefónica & Tech Mahindra for strengthening observability and cloud operations.
+    </p>
+  </div>
+  <div>
+    <div class="section-label">Contact</div>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-icon">✉</div>
+        <div>
+          <div class="contact-sub">Email</div>
+          <div class="contact-detail">aakashvallamkonda@gmail.com</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📱</div>
+        <div>
+          <div class="contact-sub">Phone</div>
+          <div class="contact-detail">+91 91821 66337</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-sub">Location</div>
+          <div class="contact-detail">Bengaluru, Karnataka, India</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🔗</div>
+        <div>
+          <div class="contact-sub">LinkedIn</div>
+          <div class="contact-detail">linkedin.com/in/aakash-vallamkonda</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="skills-intro">
+    <div class="section-label">Technical Skills</div>
+    <h2>What I Work With</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card observe">
+      <div class="skill-cat">Core Platform</div>
+      <h3>AWS Cloud</h3>
+      <div class="skill-tags">
+        <span class="tag">EC2</span><span class="tag">S3</span><span class="tag">IAM</span>
+        <span class="tag">VPC</span><span class="tag">Security Groups</span><span class="tag">KMS</span>
+        <span class="tag">CloudTrail</span><span class="tag">GuardDuty</span><span class="tag">SecurityHub</span>
+      </div>
+    </div>
+    <div class="skill-card observe">
+      <div class="skill-cat">Security</div>
+      <h3>Cloud Security</h3>
+      <div class="skill-tags">
+        <span class="tag">IAM Hardening</span><span class="tag">Encryption</span>
+        <span class="tag">Incident Response</span><span class="tag">Vulnerability Identification</span>
+        <span class="tag">Threat Analysis</span>
+      </div>
+    </div>
+    <div class="skill-card observe">
+      <div class="skill-cat">Automation</div>
+      <h3>Scripting & IaC</h3>
+      <div class="skill-tags">
+        <span class="tag">Python</span><span class="tag">Bash</span><span class="tag">Ansible</span>
+        <span class="tag">Terraform</span><span class="tag">CloudFormation</span>
+        <span class="tag">GitLab CI/CD</span>
+      </div>
+    </div>
+    <div class="skill-card observe">
+      <div class="skill-cat">Monitoring</div>
+      <h3>Observability Stack</h3>
+      <div class="skill-tags">
+        <span class="tag">ELK Stack</span><span class="tag">CloudWatch</span>
+        <span class="tag">Audit Logs</span><span class="tag">Log Analysis</span>
+        <span class="tag">Alert Correlation</span>
+      </div>
+    </div>
+    <div class="skill-card observe">
+      <div class="skill-cat">Containers</div>
+      <h3>Container Security</h3>
+      <div class="skill-tags">
+        <span class="tag">Docker</span><span class="tag">Kubernetes</span>
+        <span class="tag">Image Checks</span><span class="tag">Pod Logging</span>
+        <span class="tag">Config Validation</span>
+      </div>
+    </div>
+    <div class="skill-card observe">
+      <div class="skill-cat">Systems</div>
+      <h3>Linux & DevOps</h3>
+      <div class="skill-tags">
+        <span class="tag">RHEL</span><span class="tag">Ubuntu</span>
+        <span class="tag">Log Analysis</span><span class="tag">Services & Permissions</span>
+        <span class="tag">GCP Basics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">Experience</div>
+  <h2>Where I've Worked</h2>
+
+  <div class="exp-card observe" style="margin-top: 60px;">
+    <div class="exp-meta">
+      <div class="exp-period">Sep 2023 — Present</div>
+      <div class="exp-company">Tech Mahindra</div>
+      <div class="exp-location">Bengaluru, India</div>
+      <span class="exp-badge">● Current</span>
+    </div>
+    <div>
+      <div class="exp-role">Associate Engineer<br>Cloud Security & Observability</div>
+      <div class="exp-items">
+        <div class="exp-item">
+          <div>
+            <div class="exp-item-title">Security Monitoring</div>
+            <div class="exp-item-text">Monitored AWS environments using CloudWatch, ELK, and IAM Access Analyzer to detect misconfigurations, suspicious activity, and IAM policy risks.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div>
+            <div class="exp-item-title">Security Controls</div>
+            <div class="exp-item-text">Configured IAM roles/policies, Security Group rules, S3 encryption, CloudTrail, and VPC flow logs to strengthen overall cloud security posture.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div>
+            <div class="exp-item-title">Incident Response</div>
+            <div class="exp-item-text">Assisted in triaging security incidents, analyzing logs, correlating events, and providing root cause analysis for security alerts.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div>
+            <div class="exp-item-title">Automation</div>
+            <div class="exp-item-text">Developed Python/Bash scripts for log analysis, automated remediation, and periodic compliance checks — cutting manual effort by 30%.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div>
+            <div class="exp-item-title">IaC & Containers</div>
+            <div class="exp-item-text">Supported writing Terraform modules for AWS IAM, S3 policies, and monitoring. Performed Docker image checks and pod-level logging analysis in Kubernetes.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div>
+            <div class="exp-item-title">Cross-Team Collaboration</div>
+            <div class="exp-item-text">Provided secure design recommendations to Dev, SRE, and Cloud Engineering teams across the organization.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">Projects</div>
+  <h2>What I've Built</h2>
+  <div class="projects-grid">
+    <div class="project-card observe">
+      <div class="project-num">01</div>
+      <h3>AWS Security Hardening Project</h3>
+      <p>Implemented IAM least-privilege principles, MFA enforcement, CloudTrail org-wide logging, GuardDuty, and SecurityHub alerting across the AWS environment.</p>
+      <div class="project-arrow">View Details →</div>
+    </div>
+    <div class="project-card observe">
+      <div class="project-num">02</div>
+      <h3>Automated Log Analysis & Threat Detection</h3>
+      <p>Developed Python scripts to detect brute-force attempts, unusual API calls, and privilege escalation patterns using ELK Stack and CloudWatch log data.</p>
+      <div class="project-arrow">View Details →</div>
+    </div>
+    <div class="project-card observe">
+      <div class="project-num">03</div>
+      <h3>Terraform-based Cloud Security Setup</h3>
+      <p>Created Terraform configurations for IAM policies, S3 encryption, VPC flow logs, and CloudWatch alarms — a fully automated, repeatable security baseline.</p>
+      <div class="project-arrow">View Details →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="section-label">Achievements</div>
+  <h2>Recognition & Impact</h2>
+  <div class="ach-grid">
+    <div class="ach-card observe">
+      <span class="ach-icon">🏆</span>
+      <h3>Certificate of Excellence</h3>
+      <p>Awarded by Telefónica & Tech Mahindra for outstanding contributions to strengthening observability and cloud operations infrastructure.</p>
+    </div>
+    <div class="ach-card observe">
+      <span class="ach-highlight">30%</span>
+      <h3>Security Automation Impact</h3>
+      <p>Reduced manual effort by 30% through Python-based automation for log analysis and security compliance checks, freeing up team capacity for higher-priority threats.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">Education</div>
+  <h2>Foundation</h2>
+  <div class="edu-card observe" style="margin-top: 48px;">
+    <div>
+      <div class="edu-year">Aug 2019 — Jul 2023</div>
+    </div>
+    <div>
+      <h3>B.Tech in Electronics<br>& Communication Engineering</h3>
+      <h4>Presidency University, Bengaluru, India</h4>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">AAKASH VALLAMKONDA</div>
+  <div class="copy">© 2025 — Cloud Security Engineer</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .skill-card, .project-card, .ach-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(2)';
+      ring.style.transform = 'translate(-50%, -50%) scale(1.5)';
+      ring.style.borderColor = 'var(--accent2)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+      ring.style.transform = 'translate(-50%, -50%) scale(1)';
+      ring.style.borderColor = 'var(--accent)';
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.observe').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
